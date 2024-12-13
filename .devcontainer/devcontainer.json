@@ -1,0 +1,26 @@
+{
+  "name": "jenkins dev container",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "17",
+      "jdkDistro": "tem",
+      "installMaven": "true",
+      "mavenVersion": "3.9.9",
+      "installGradle": "false"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "customizations": {
+    "vscode":{
+      "extensions": [
+        "vscjava.vscode-java-pack"
+      ]
+    }
+  },
+  "mounts":[
+    "source=${localWorkspaceFolder}/.devcontainer/.m2,target=/home/vscode/.m2,type=bind,consistency=cached"
+  ]
+}

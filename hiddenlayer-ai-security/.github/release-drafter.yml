@@ -1,0 +1,2 @@
+_extends: .github
+tag-template: hiddenlayer-ai-security-$NEXT_MINOR_VERSION
