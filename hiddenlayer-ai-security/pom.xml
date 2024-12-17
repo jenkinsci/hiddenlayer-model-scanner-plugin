@@ -9,13 +9,13 @@
     <relativePath />
   </parent>
 
-  <groupId>io.jenkins.plugins</groupId>
+  <groupId>com.hiddenlayer</groupId>
   <artifactId>hiddenlayer-ai-security</artifactId>
   <version>${revision}${changelist}</version>
   <packaging>hpi</packaging>
 
-  <name>TODO Plugin</name>
-  <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
+  <name>HiddenLayer Model Scanner Plugin</name>
+  <url>https://github.com/hiddenlayerai/hiddenlayer-jenkins-plugin</url>
   <licenses>
     <license>
       <name>MIT License</name>
@@ -35,7 +35,7 @@
 
     <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
     <jenkins.version>2.440.3</jenkins.version>
-    <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
+    <gitHubRepo>hiddenlayerai/hiddenlayer-jenkins-plugin</gitHubRepo>
 
     <spotless.check.skip>false</spotless.check.skip>
   </properties>
@@ -53,6 +53,11 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
+    <dependency>
+      <groupId>com.hiddenlayer</groupId>
+      <artifactId>hiddenlayer-sdk</artifactId>
+      <version>0.0.2</version>
+    </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>structs</artifactId>
@@ -83,6 +88,10 @@
     <repository>
       <id>repo.jenkins-ci.org</id>
       <url>https://repo.jenkins-ci.org/public/</url>
+    </repository>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/hiddenlayerai/hiddenlayer-sdk-java</url>
     </repository>
   </repositories>
   <pluginRepositories>
