@@ -1,0 +1,14 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:f="lib/form">
+    <f:entry title="HiddenLayer Client ID" field="hlClientId">
+        <f:textbox/>
+    </f:entry>
+    <!-- The secret must be stored securely in Jenkins.
+         Use the f:password entry type in config.jelly to hide the secret in the UI. -->
+    <f:entry title="HiddenLayer Client Secret" field="hlClientSecret">
+        <f:password/>
+    </f:entry>
+    <f:entry title="Folder to Scan" field="folderToScan">
+        <f:textbox/>
+    </f:entry>
+</j:jelly>
