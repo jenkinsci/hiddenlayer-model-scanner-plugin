@@ -1,0 +1,4 @@
+<?jelly escape-by-default='true'?>
+<div>
+    This plugin scans ML models with HiddenLayer (https://hiddenlayer.com/)
+</div>

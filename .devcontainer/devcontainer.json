@@ -22,5 +22,9 @@
   },
   "mounts":[
     "source=${localWorkspaceFolder}/.devcontainer/.m2,target=/home/vscode/.m2,type=bind,consistency=cached"
-  ]
+  ],
+  "remoteEnv": {
+    "GITHUB_ACTOR": "${localEnv:GITHUB_ACTOR}",
+    "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}"
+}
 }
