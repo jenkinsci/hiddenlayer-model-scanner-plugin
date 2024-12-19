@@ -14,7 +14,6 @@ import java.io.IOException;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
 /**
@@ -40,7 +39,6 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
         return hlClientId;
     }
 
-    @DataBoundSetter
     public void setHlClientId(String hlClientId) {
         this.hlClientId = hlClientId;
     }
@@ -49,7 +47,6 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
         return hlClientSecret;
     }
 
-    @DataBoundSetter
     public void setHlClientSecret(String hlClientSecret) {
         this.hlClientSecret = hlClientSecret;
     }
@@ -58,7 +55,6 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
         return folderToScan;
     }
 
-    @DataBoundSetter
     public void setFolderToScan(String folderToScan) {
         this.folderToScan = folderToScan;
     }
