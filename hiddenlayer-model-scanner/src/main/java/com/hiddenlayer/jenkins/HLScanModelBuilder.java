@@ -10,20 +10,15 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
-
 import java.io.IOException;
 import jenkins.tasks.SimpleBuildStep;
-import net.sf.json.JSONObject;
-
-import javax.servlet.ServletException;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
 
 /**
- * 
+ *
  */
 public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
 
@@ -39,7 +34,6 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
         this.hlClientId = hlClientId;
         this.hlClientSecret = hlClientSecret;
         this.folderToScan = folderToScan;
-
     }
 
     public String getHlClientId() {
@@ -69,7 +63,7 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
         this.folderToScan = folderToScan;
     }
 
-    /** 
+    /**
      * Executes the build step:
      * - Scan the ML model in the specified folder by calling the HiddenLayer Model Scanner
      * - Report results
@@ -84,21 +78,21 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
     @Symbol("hlScanModel")
     @Extension
     public static class DescriptorImpl extends BuildStepDescriptor<Builder> {
-    
+
         public DescriptorImpl() {
             super(HLScanModelBuilder.class);
         }
-    
+
         @Override
         public boolean isApplicable(Class<? extends AbstractProject> aClass) {
             return true;
         }
-    
+
         @Override
         public String getDisplayName() {
             return "Scan ML Model with HiddenLayer";
         }
-    
+
         // Form validations
         public FormValidation doCheckHlClientId(@QueryParameter String value) {
             if (value.trim().isEmpty()) {
@@ -106,14 +100,14 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
             }
             return FormValidation.ok();
         }
-    
+
         public FormValidation doCheckHlClientSecret(@QueryParameter String value) {
             if (value.trim().isEmpty()) {
                 return FormValidation.error("Client Secret cannot be empty");
             }
             return FormValidation.ok();
         }
-    
+
         public FormValidation doCheckFolderToScan(@QueryParameter String value) {
             if (value.trim().isEmpty()) {
                 return FormValidation.error("Folder to scan cannot be empty");
