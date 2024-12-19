@@ -10,6 +10,7 @@ public class HLScanModelBuilderTest {
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
 
+    final String modelName = "model-name";
     final String hlClientId = "client-id";
     final String hlClientSecret = "client-secret";
     final String folderToScan = "folder-to-scan";
@@ -50,6 +51,6 @@ public class HLScanModelBuilderTest {
     // }
 
     private HLScanModelBuilder createBuilder() {
-        return new HLScanModelBuilder(hlClientId, hlClientSecret, folderToScan);
+        return new HLScanModelBuilder(modelName, hlClientId, hlClientSecret, folderToScan);
     }
 }

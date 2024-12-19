@@ -21,6 +21,9 @@ import org.kohsuke.stapler.QueryParameter;
  */
 public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
 
+    // Name of the model to be scanned
+    private String modelName;
+
     // HiddenLayer API credentials are needed to scan the model.
     // Credentials are the client ID and client secret.
     private String hlClientId;
@@ -29,10 +32,19 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
     private String folderToScan;
 
     @DataBoundConstructor
-    public HLScanModelBuilder(String hlClientId, String hlClientSecret, String folderToScan) {
+    public HLScanModelBuilder(String modelName, String hlClientId, String hlClientSecret, String folderToScan) {
+        this.modelName = modelName;
         this.hlClientId = hlClientId;
         this.hlClientSecret = hlClientSecret;
         this.folderToScan = folderToScan;
+    }
+
+    public String getModelName() {
+        return modelName;
+    }
+
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
     }
 
     public String getHlClientId() {
