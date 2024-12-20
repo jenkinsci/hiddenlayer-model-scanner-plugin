@@ -16,6 +16,7 @@ import java.net.URISyntaxException;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,31 +63,46 @@ public class HLScanModelBuilderTest {
         when(mockModelScanService.scanFolder(anyString(), anyString())).thenReturn(scanReport);
     }
 
+    @After
+    public void tearDown() {
+        ModelScanServiceFactory.setTestInstance(null);
+    }
+
     @Test
     public void testConfigRoundtrip() throws Exception {
-        FreeStyleProject project = jenkins.createFreeStyleProject();
-        HLScanModelBuilder builder = createBuilder();
-        project.getBuildersList().add(builder);
-        project = jenkins.configRoundtrip(project);
-        jenkins.assertEqualDataBoundBeans(builder, project.getBuildersList().get(0));
+        try {
+            FreeStyleProject project = jenkins.createFreeStyleProject();
+            HLScanModelBuilder builder = createBuilder();
+            project.getBuildersList().add(builder);
+            project = jenkins.configRoundtrip(project);
+            jenkins.assertEqualDataBoundBeans(builder, project.getBuildersList().get(0));
+        } finally {
+            // Clean up any test-specific resources
+            ModelScanServiceFactory.setTestInstance(null);
+        }
     }
 
     @Test
     public void testBuild() throws Exception {
-        FreeStyleProject project = jenkins.createFreeStyleProject();
-        HLScanModelBuilder builder = createBuilder();
-        project.getBuildersList().add(builder);
+        try {
+            FreeStyleProject project = jenkins.createFreeStyleProject();
+            HLScanModelBuilder builder = createBuilder();
+            project.getBuildersList().add(builder);
 
-        FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
-        jenkins.assertLogContains(scanMessage, build);
+            FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
+            jenkins.assertLogContains(scanMessage, build);
+        } finally {
+            // Clean up any test-specific resources
+            ModelScanServiceFactory.setTestInstance(null);
+        }
     }
 
     @Test
     public void testScriptedPipeline() throws Exception {
-        // Set up the mock service globally
-        ModelScanServiceFactory.setTestInstance(mockModelScanService);
-
         try {
+            // Set up the mock service globally
+            ModelScanServiceFactory.setTestInstance(mockModelScanService);
+
             String agentLabel = "my-agent";
             jenkins.createOnlineSlave(Label.get(agentLabel));
             WorkflowJob job = jenkins.createProject(WorkflowJob.class, "test-scripted-pipeline");
@@ -102,7 +118,7 @@ public class HLScanModelBuilderTest {
             // Add verification that mock was called with expected parameters
             verify(mockModelScanService).scanFolder(eq(modelName), anyString());
         } finally {
-            // Clean up the global state
+            // Clean up any test-specific resources
             ModelScanServiceFactory.setTestInstance(null);
         }
     }
