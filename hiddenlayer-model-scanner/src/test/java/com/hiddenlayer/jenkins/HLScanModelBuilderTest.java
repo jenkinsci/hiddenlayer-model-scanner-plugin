@@ -87,6 +87,8 @@ public class HLScanModelBuilderTest {
         jenkins.assertLogContains(scanMessage, build);
     }
 
+    // This test is disabled unless we figure out a way to mock the ModelScanService. 
+    // We don't control HLScanModelBuilder creation in this case. Use PowerMock?
     // @Test
     // public void testScriptedPipeline() throws Exception {
     //     String agentLabel = "my-agent";
