@@ -1,5 +1,9 @@
 package com.hiddenlayer.jenkins;
 
+import hiddenlayer.Config;
+import hiddenlayer.ModelScanService;
+
+import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -11,10 +15,13 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
+import org.openapitools.client.model.ScanReportV3;
 
 /**
  *
@@ -30,6 +37,8 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
     private String hlClientSecret;
 
     private String folderToScan;
+
+    private ModelScanService modelScanService;
 
     @DataBoundConstructor
     public HLScanModelBuilder(String modelName, String hlClientId, String hlClientSecret, String folderToScan) {
@@ -71,6 +80,14 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
         this.folderToScan = folderToScan;
     }
 
+    public ModelScanService getModelScanService() {
+        return modelScanService;
+    }
+
+    public void setModelScanService(ModelScanService modelScanService) {
+        this.modelScanService = modelScanService;
+    }
+
     /**
      * Executes the build step:
      * - Scan the ML model in the specified folder by calling the HiddenLayer Model Scanner
@@ -78,9 +95,39 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
      */
     @Override
     public void perform(Run<?, ?> run, FilePath workspace, EnvVars env, Launcher launcher, TaskListener listener)
-            throws InterruptedException, IOException {
-        listener.getLogger().println("Scanning folder: " + folderToScan);
-        // Add scanning and reporting logic here
+            throws InterruptedException, IOException, AbortException {
+        // Keep this log message in sync with scanMessage in HLScanModelBuilderTest.java
+        listener.getLogger().printf("Scanning model %s in folder %s\n", modelName, folderToScan);
+
+        try {
+            // Configure HiddenLayer API credentials
+            Config config = new Config(hlClientId, hlClientSecret);
+
+            // Initialize the ModelScanService if needed (tests inject a mock service)
+            if (modelScanService == null) {
+                modelScanService = new ModelScanService(config);
+            }
+
+            ScanReportV3 report = modelScanService.scanFolder(modelName, workspace + "/" + folderToScan);
+
+            // TODO: don't just dump the report, print out what matters to the user:
+            //  model name, model version, scan status, scan severity, console scan link, scan end time, scanner version
+            //  include scanner error message if scan failed 
+            listener.getLogger().println("Scan complete. Results: " + report.toString());
+            listener.getLogger().println("Web link to the HiddenLayer scan: " + getScanResultsUrl(report));
+
+        } catch (Exception e) {
+            listener.getLogger().println("Error scanning model: " + e.getMessage());
+            StringWriter writer = new StringWriter();
+            PrintWriter pw = new PrintWriter(writer);
+            e.printStackTrace(pw);
+            listener.getLogger().println(writer.toString());
+            throw new AbortException("Error scanning model: " + e.getMessage());
+        }
+    }
+
+    private String getScanResultsUrl(ScanReportV3 scanReport) {
+        return "https://console.us.hiddenlayer.ai/model-details/" + scanReport.getInventory().getModelId() + "/scans/" + scanReport.getScanId();
     }
 
     @Symbol("hlScanModel")
