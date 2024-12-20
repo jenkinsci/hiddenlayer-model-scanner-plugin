@@ -1,20 +1,18 @@
 package com.hiddenlayer.jenkins;
 
-import hudson.model.FreeStyleBuild;
-import hudson.model.FreeStyleProject;
-import hudson.model.Label;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import hiddenlayer.ModelScanService;
+import hiddenlayer.sdk.ApiException;
+import hudson.model.FreeStyleBuild;
+import hudson.model.FreeStyleProject;
+import hudson.model.Label;
 import java.io.IOException;
 import java.net.URISyntaxException;
-
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -22,12 +20,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
-//import org.mockito.ArgumentCaptor;
 import org.openapitools.client.model.ModelInventoryInfo;
 import org.openapitools.client.model.ScanReportV3;
-
-import hiddenlayer.ModelScanService;
-import hiddenlayer.sdk.ApiException;
 
 public class HLScanModelBuilderTest {
 
@@ -62,7 +56,7 @@ public class HLScanModelBuilderTest {
         scanReport.setInventory(mii);
         scanReport.setScanId(scanId);
         scanReport.setSeverity(ScanReportV3.SeverityEnum.SAFE);
-    
+
         // TODO: capture and validate the arguments passed to the scanFolder method
         // Not all tests call scanFolder, though, so we can't require the args in all tests.
         when(mockModelScanService.scanFolder(anyString(), anyString())).thenReturn(scanReport);
@@ -87,21 +81,30 @@ public class HLScanModelBuilderTest {
         jenkins.assertLogContains(scanMessage, build);
     }
 
-    // This test is disabled unless we figure out a way to mock the ModelScanService. 
-    // We don't control HLScanModelBuilder creation in this case. Use PowerMock?
-    // @Test
-    // public void testScriptedPipeline() throws Exception {
-    //     String agentLabel = "my-agent";
-    //     jenkins.createOnlineSlave(Label.get(agentLabel));
-    //     WorkflowJob job = jenkins.createProject(WorkflowJob.class, "test-scripted-pipeline");
-    //     String pipelineScript = "node {hlScanModel modelName: '" + modelName
-    //             + "', hlClientId: '" + hlClientId
-    //             + "', hlClientSecret: '" + hlClientSecret
-    //             + "', folderToScan: '" + folderToScan + "'}";
-    //     job.setDefinition(new CpsFlowDefinition(pipelineScript, true));
-    //     WorkflowRun completedBuild = jenkins.assertBuildStatusSuccess(job.scheduleBuild2(0));
-    //     jenkins.assertLogContains(scanMessage, completedBuild);
-    // }
+    @Test
+    public void testScriptedPipeline() throws Exception {
+        // Set up the mock service globally
+        ModelScanServiceFactory.setTestInstance(mockModelScanService);
+
+        try {
+            String agentLabel = "my-agent";
+            jenkins.createOnlineSlave(Label.get(agentLabel));
+            WorkflowJob job = jenkins.createProject(WorkflowJob.class, "test-scripted-pipeline");
+            String pipelineScript = "node {hlScanModel modelName: '" + modelName
+                    + "', hlClientId: '" + hlClientId
+                    + "', hlClientSecret: '" + hlClientSecret
+                    + "', folderToScan: '" + folderToScan + "'}";
+            job.setDefinition(new CpsFlowDefinition(pipelineScript, true));
+            WorkflowRun completedBuild = jenkins.assertBuildStatusSuccess(job.scheduleBuild2(0));
+            jenkins.assertLogContains(scanMessage, completedBuild);
+
+            // Add verification that mock was called with expected parameters
+            verify(mockModelScanService).scanFolder(eq(modelName), anyString());
+        } finally {
+            // Clean up the global state
+            ModelScanServiceFactory.setTestInstance(null);
+        }
+    }
 
     private HLScanModelBuilder createBuilder() {
         HLScanModelBuilder builder = new HLScanModelBuilder(modelName, hlClientId, hlClientSecret, folderToScan);

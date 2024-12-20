@@ -1,8 +1,6 @@
 package com.hiddenlayer.jenkins;
 
-import hiddenlayer.Config;
 import hiddenlayer.ModelScanService;
-
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -24,7 +22,7 @@ import org.kohsuke.stapler.QueryParameter;
 import org.openapitools.client.model.ScanReportV3;
 
 /**
- *
+ * Jenkins Builder providing a build step to scan an ML model using the HiddenLayer Model Scanner.
  */
 public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
 
@@ -100,19 +98,18 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
         listener.getLogger().printf("Scanning model %s in folder %s\n", modelName, folderToScan);
 
         try {
-            // Configure HiddenLayer API credentials
-            Config config = new Config(hlClientId, hlClientSecret);
-
-            // Initialize the ModelScanService if needed (tests inject a mock service)
+            // Initialize the ModelScanService if needed (tests may inject a mock service)
             if (modelScanService == null) {
-                modelScanService = new ModelScanService(config);
+                modelScanService = ModelScanServiceFactory.getInstance(hlClientId, hlClientSecret);
             }
 
-            ScanReportV3 report = modelScanService.scanFolder(modelName, workspace + "/" + folderToScan);
+            // Scan the model in folderToScan
+            FilePath folderPath = new FilePath(workspace, folderToScan);
+            ScanReportV3 report = modelScanService.scanFolder(modelName, folderPath.getRemote());
 
             // TODO: don't just dump the report, print out what matters to the user:
             //  model name, model version, scan status, scan severity, console scan link, scan end time, scanner version
-            //  include scanner error message if scan failed 
+            //  include scanner error message if scan failed
             listener.getLogger().println("Scan complete. Results: " + report.toString());
             listener.getLogger().println("Web link to the HiddenLayer scan: " + getScanResultsUrl(report));
 
@@ -127,7 +124,8 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
     }
 
     private String getScanResultsUrl(ScanReportV3 scanReport) {
-        return "https://console.us.hiddenlayer.ai/model-details/" + scanReport.getInventory().getModelId() + "/scans/" + scanReport.getScanId();
+        return "https://console.us.hiddenlayer.ai/model-details/"
+                + scanReport.getInventory().getModelId() + "/scans/" + scanReport.getScanId();
     }
 
     @Symbol("hlScanModel")
