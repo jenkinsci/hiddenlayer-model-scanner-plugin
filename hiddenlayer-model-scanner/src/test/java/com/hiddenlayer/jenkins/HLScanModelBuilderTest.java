@@ -70,57 +70,42 @@ public class HLScanModelBuilderTest {
 
     @Test
     public void testConfigRoundtrip() throws Exception {
-        try {
-            FreeStyleProject project = jenkins.createFreeStyleProject();
-            HLScanModelBuilder builder = createBuilder();
-            project.getBuildersList().add(builder);
-            project = jenkins.configRoundtrip(project);
-            jenkins.assertEqualDataBoundBeans(builder, project.getBuildersList().get(0));
-        } finally {
-            // Clean up any test-specific resources
-            ModelScanServiceFactory.setTestInstance(null);
-        }
+        FreeStyleProject project = jenkins.createFreeStyleProject();
+        HLScanModelBuilder builder = createBuilder();
+        project.getBuildersList().add(builder);
+        project = jenkins.configRoundtrip(project);
+        jenkins.assertEqualDataBoundBeans(builder, project.getBuildersList().get(0));
     }
 
     @Test
     public void testBuild() throws Exception {
-        try {
-            FreeStyleProject project = jenkins.createFreeStyleProject();
-            HLScanModelBuilder builder = createBuilder();
-            project.getBuildersList().add(builder);
+        FreeStyleProject project = jenkins.createFreeStyleProject();
+        HLScanModelBuilder builder = createBuilder();
+        project.getBuildersList().add(builder);
 
-            FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
-            jenkins.assertLogContains(scanMessage, build);
-        } finally {
-            // Clean up any test-specific resources
-            ModelScanServiceFactory.setTestInstance(null);
-        }
+        FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
+        jenkins.assertLogContains(scanMessage, build);
     }
 
     @Test
     public void testScriptedPipeline() throws Exception {
-        try {
-            // Set up the mock service globally
-            ModelScanServiceFactory.setTestInstance(mockModelScanService);
+        // Set up the mock service globally
+        ModelScanServiceFactory.setTestInstance(mockModelScanService);
 
-            String agentLabel = "my-agent";
-            jenkins.createOnlineSlave(Label.get(agentLabel));
-            WorkflowJob job = jenkins.createProject(WorkflowJob.class, "test-scripted-pipeline");
-            String pipelineScript = "node {hlScanModel modelName: '" + modelName
-                    + "', hlClientId: '" + hlClientId
-                    + "', hlClientSecret: '" + hlClientSecret
-                    + "', folderToScan: '" + folderToScan
-                    + "'}";
-            job.setDefinition(new CpsFlowDefinition(pipelineScript, true));
-            WorkflowRun completedBuild = jenkins.assertBuildStatusSuccess(job.scheduleBuild2(0));
-            jenkins.assertLogContains(scanMessage, completedBuild);
+        String agentLabel = "my-agent";
+        jenkins.createOnlineSlave(Label.get(agentLabel));
+        WorkflowJob job = jenkins.createProject(WorkflowJob.class, "test-scripted-pipeline");
+        String pipelineScript = "node {hlScanModel modelName: '" + modelName
+                + "', hlClientId: '" + hlClientId
+                + "', hlClientSecret: '" + hlClientSecret
+                + "', folderToScan: '" + folderToScan
+                + "'}";
+        job.setDefinition(new CpsFlowDefinition(pipelineScript, true));
+        WorkflowRun completedBuild = jenkins.assertBuildStatusSuccess(job.scheduleBuild2(0));
+        jenkins.assertLogContains(scanMessage, completedBuild);
 
-            // Add verification that mock was called with expected parameters
-            verify(mockModelScanService).scanFolder(eq(modelName), anyString());
-        } finally {
-            // Clean up any test-specific resources
-            ModelScanServiceFactory.setTestInstance(null);
-        }
+        // Add verification that mock was called with expected parameters
+        verify(mockModelScanService).scanFolder(eq(modelName), anyString());
     }
 
     private HLScanModelBuilder createBuilder() {
