@@ -12,6 +12,7 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
+import hudson.util.Secret;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -32,7 +33,7 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
     // HiddenLayer API credentials are needed to scan the model.
     // Credentials are the client ID and client secret.
     private String hlClientId;
-    private String hlClientSecret;
+    private Secret hlClientSecret;
 
     private String folderToScan;
 
@@ -42,7 +43,7 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
     public HLScanModelBuilder(String modelName, String hlClientId, String hlClientSecret, String folderToScan) {
         this.modelName = modelName;
         this.hlClientId = hlClientId;
-        this.hlClientSecret = hlClientSecret;
+        this.hlClientSecret = Secret.fromString(hlClientSecret);
         this.folderToScan = folderToScan;
     }
 
@@ -62,11 +63,11 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
         this.hlClientId = hlClientId;
     }
 
-    public String getHlClientSecret() {
+    public Secret getHlClientSecret() {
         return hlClientSecret;
     }
 
-    public void setHlClientSecret(String hlClientSecret) {
+    public void setHlClientSecret(Secret hlClientSecret) {
         this.hlClientSecret = hlClientSecret;
     }
 

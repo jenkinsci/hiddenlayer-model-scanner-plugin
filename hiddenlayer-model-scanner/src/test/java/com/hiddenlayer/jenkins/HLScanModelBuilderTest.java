@@ -93,7 +93,8 @@ public class HLScanModelBuilderTest {
             String pipelineScript = "node {hlScanModel modelName: '" + modelName
                     + "', hlClientId: '" + hlClientId
                     + "', hlClientSecret: '" + hlClientSecret
-                    + "', folderToScan: '" + folderToScan + "'}";
+                    + "', folderToScan: '" + folderToScan
+                    + "'}";
             job.setDefinition(new CpsFlowDefinition(pipelineScript, true));
             WorkflowRun completedBuild = jenkins.assertBuildStatusSuccess(job.scheduleBuild2(0));
             jenkins.assertLogContains(scanMessage, completedBuild);
