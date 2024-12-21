@@ -23,7 +23,7 @@ import org.kohsuke.stapler.QueryParameter;
 import org.openapitools.client.model.ScanReportV3;
 
 /**
- * Jenkins Builder providing a build step to scan an ML model using the HiddenLayer Model Scanner.
+ * HLScanModelBuilder provides a build step that scans an ML model using the HiddenLayer Model Scanner.
  */
 public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
 
@@ -35,8 +35,10 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
     private String hlClientId;
     private Secret hlClientSecret;
 
+    // Folder containing the model to be scanned, relative to the workspace.
     private String folderToScan;
 
+    // Service used to call the HiddenLayer Model Scanner
     private ModelScanService modelScanService;
 
     @DataBoundConstructor
@@ -88,7 +90,7 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
     }
 
     /**
-     * Executes the build step:
+     * Execute the build step:
      * - Scan the ML model in the specified folder by calling the HiddenLayer Model Scanner
      * - Report results
      */
@@ -96,7 +98,7 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
     public void perform(Run<?, ?> run, FilePath workspace, EnvVars env, Launcher launcher, TaskListener listener)
             throws InterruptedException, IOException, AbortException {
         // Keep this log message in sync with scanMessage in HLScanModelBuilderTest.java
-        listener.getLogger().printf("Scanning model %s in folder %s\n", modelName, folderToScan);
+        listener.getLogger().printf("Scanning model %s in folder %s ...\n", modelName, folderToScan);
 
         try {
             // Initialize the ModelScanService if needed (tests may inject a mock service)
@@ -108,11 +110,9 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
             FilePath folderPath = new FilePath(workspace, folderToScan);
             ScanReportV3 report = modelScanService.scanFolder(modelName, folderPath.getRemote());
 
-            // TODO: don't just dump the report, print out what matters to the user:
-            //  model name, model version, scan status, scan severity, console scan link, scan end time, scanner version
-            //  include scanner error message if scan failed
-            listener.getLogger().println("Scan complete. Results: " + report.toString());
-            listener.getLogger().println("Web link to the HiddenLayer scan: " + getScanResultsUrl(report));
+            // Summarize the scan results for the user
+            String summary = ScanReporter.summarizeScan(report);
+            listener.getLogger().print(summary);
 
         } catch (Exception e) {
             listener.getLogger().println("Error scanning model: " + e.getMessage());
@@ -124,13 +124,11 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
         }
     }
 
-    private String getScanResultsUrl(ScanReportV3 scanReport) {
-        return "https://console.us.hiddenlayer.ai/model-details/"
-                + scanReport.getInventory().getModelId() + "/scans/" + scanReport.getScanId();
-    }
-
     @Symbol("hlScanModel")
     @Extension
+    /**
+     * DescriptorImpl is a descriptor class for a Builder (a build step that runs during the build process).
+     */
     public static class DescriptorImpl extends BuildStepDescriptor<Builder> {
 
         public DescriptorImpl() {
@@ -148,6 +146,14 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
         }
 
         // Form validations
+
+        public FormValidation doCheckModelName(@QueryParameter String value) {
+            if (value.trim().isEmpty()) {
+                return FormValidation.error("Client ID cannot be empty");
+            }
+            return FormValidation.ok();
+        }
+
         public FormValidation doCheckHlClientId(@QueryParameter String value) {
             if (value.trim().isEmpty()) {
                 return FormValidation.error("Client ID cannot be empty");

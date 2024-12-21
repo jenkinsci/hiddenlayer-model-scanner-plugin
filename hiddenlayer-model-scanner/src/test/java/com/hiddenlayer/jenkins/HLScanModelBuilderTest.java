@@ -13,6 +13,8 @@ import hudson.model.FreeStyleProject;
 import hudson.model.Label;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.OffsetDateTime;
+
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -54,12 +56,14 @@ public class HLScanModelBuilderTest {
         mii.setModelId(modelId);
 
         ScanReportV3 scanReport = new ScanReportV3();
+        scanReport.setStatus(ScanReportV3.StatusEnum.DONE);
         scanReport.setInventory(mii);
         scanReport.setScanId(scanId);
         scanReport.setSeverity(ScanReportV3.SeverityEnum.SAFE);
+        OffsetDateTime offsetDateTime = OffsetDateTime.parse("2021-01-01T00:00:00Z");
+        scanReport.setEndTime(offsetDateTime);
+        scanReport.setVersion("24.10.2");
 
-        // TODO: capture and validate the arguments passed to the scanFolder method
-        // Not all tests call scanFolder, though, so we can't require the args in all tests.
         when(mockModelScanService.scanFolder(anyString(), anyString())).thenReturn(scanReport);
     }
 
@@ -68,6 +72,7 @@ public class HLScanModelBuilderTest {
         ModelScanServiceFactory.setTestInstance(null);
     }
 
+    // Test that the builder can be created and configured
     @Test
     public void testConfigRoundtrip() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
@@ -77,6 +82,7 @@ public class HLScanModelBuilderTest {
         jenkins.assertEqualDataBoundBeans(builder, project.getBuildersList().get(0));
     }
 
+    // Test that the builder can be created and run
     @Test
     public void testBuild() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
@@ -87,13 +93,14 @@ public class HLScanModelBuilderTest {
         jenkins.assertLogContains(scanMessage, build);
     }
 
+    // Test that the builder can be created and run in a scripted pipeline
     @Test
     public void testScriptedPipeline() throws Exception {
         // Set up the mock service globally
         ModelScanServiceFactory.setTestInstance(mockModelScanService);
 
         String agentLabel = "my-agent";
-        jenkins.createOnlineSlave(Label.get(agentLabel));
+        jenkins.createOnlineSlave(Label.get(agentLabel));   // this Jenkins method name needs updating
         WorkflowJob job = jenkins.createProject(WorkflowJob.class, "test-scripted-pipeline");
         String pipelineScript = "node {hlScanModel modelName: '" + modelName
                 + "', hlClientId: '" + hlClientId
