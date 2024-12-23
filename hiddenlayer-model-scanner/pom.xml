@@ -10,8 +10,8 @@
     <relativePath />
   </parent>
 
-  <groupId>com.hiddenlayer.jenkins</groupId>
-  <artifactId>hiddenlayer-model-scanner-plugin</artifactId>
+  <groupId>io.jenkins.plugins</groupId>
+  <artifactId>hiddenlayer-model-scanner</artifactId>
   <version>${revision}${changelist}</version>
   <packaging>hpi</packaging>
 
