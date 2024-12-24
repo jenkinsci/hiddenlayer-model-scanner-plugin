@@ -1,4 +1,4 @@
-package com.hiddenlayer.jenkins;
+package io.jenkins.hiddenlayer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

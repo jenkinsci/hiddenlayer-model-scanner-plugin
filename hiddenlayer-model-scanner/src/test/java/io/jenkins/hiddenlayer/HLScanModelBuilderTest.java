@@ -1,4 +1,4 @@
-package com.hiddenlayer.jenkins;
+package io.jenkins.hiddenlayer;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -14,7 +14,6 @@ import hudson.model.Label;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
-
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -100,7 +99,7 @@ public class HLScanModelBuilderTest {
         ModelScanServiceFactory.setTestInstance(mockModelScanService);
 
         String agentLabel = "my-agent";
-        jenkins.createOnlineSlave(Label.get(agentLabel));   // this Jenkins method name needs updating
+        jenkins.createOnlineSlave(Label.get(agentLabel)); // this Jenkins method name needs updating
         WorkflowJob job = jenkins.createProject(WorkflowJob.class, "test-scripted-pipeline");
         String pipelineScript = "node {hlScanModel modelName: '" + modelName
                 + "', hlClientId: '" + hlClientId

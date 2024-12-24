@@ -1,4 +1,4 @@
-package com.hiddenlayer.jenkins;
+package io.jenkins.hiddenlayer;
 
 import hiddenlayer.ModelScanService;
 import hudson.AbortException;
@@ -19,6 +19,7 @@ import java.io.StringWriter;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.openapitools.client.model.ScanReportV3;
 
@@ -45,7 +46,7 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
     public HLScanModelBuilder(String modelName, String hlClientId, String hlClientSecret, String folderToScan) {
         this.modelName = modelName;
         this.hlClientId = hlClientId;
-        this.hlClientSecret = Secret.fromString(hlClientSecret);
+        setHlClientSecret(hlClientSecret);
         this.folderToScan = folderToScan;
     }
 
@@ -53,6 +54,7 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
         return modelName;
     }
 
+    @DataBoundSetter
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
@@ -61,22 +63,25 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
         return hlClientId;
     }
 
+    @DataBoundSetter
     public void setHlClientId(String hlClientId) {
         this.hlClientId = hlClientId;
     }
 
-    public Secret getHlClientSecret() {
-        return hlClientSecret;
+    public String getHlClientSecret() {
+        return Secret.toString(hlClientSecret);
     }
 
-    public void setHlClientSecret(Secret hlClientSecret) {
-        this.hlClientSecret = hlClientSecret;
+    @DataBoundSetter
+    public void setHlClientSecret(String hlClientSecret) {
+        this.hlClientSecret = Secret.fromString(hlClientSecret);
     }
 
     public String getFolderToScan() {
         return folderToScan;
     }
 
+    @DataBoundSetter
     public void setFolderToScan(String folderToScan) {
         this.folderToScan = folderToScan;
     }

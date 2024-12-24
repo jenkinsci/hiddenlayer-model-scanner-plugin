@@ -1,4 +1,4 @@
-package com.hiddenlayer.jenkins;
+package io.jenkins.hiddenlayer;
 
 import hiddenlayer.Config;
 import hiddenlayer.ModelScanService;

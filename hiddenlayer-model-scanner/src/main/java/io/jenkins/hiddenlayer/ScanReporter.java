@@ -1,7 +1,6 @@
-package com.hiddenlayer.jenkins;
+package io.jenkins.hiddenlayer;
 
 import java.time.format.DateTimeFormatter;
-
 import org.openapitools.client.model.ScanReportV3;
 
 public class ScanReporter {
