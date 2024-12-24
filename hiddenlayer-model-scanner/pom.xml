@@ -61,6 +61,12 @@
   </dependencyManagement>
   <dependencies>
 
+    <dependency>
+      <groupId>com.hiddenlayer</groupId>
+      <artifactId>hiddenlayer-sdk</artifactId>
+      <version>0.0.4</version>
+    </dependency>
+
     <!-- JSON processing: jackson -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -133,6 +139,11 @@
     <repository>
       <id>repo.jenkins-ci.org</id>
       <url>https://repo.jenkins-ci.org/public/</url>
+    </repository>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/hiddenlayerai/hiddenlayer-sdk-java</url>
     </repository>
   </repositories>
   <pluginRepositories>
