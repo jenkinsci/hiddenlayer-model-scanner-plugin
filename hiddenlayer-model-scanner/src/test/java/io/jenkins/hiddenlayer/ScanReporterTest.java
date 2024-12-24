@@ -6,8 +6,8 @@ import java.time.OffsetDateTime;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.openapitools.client.model.ModelInventoryInfo;
-import org.openapitools.client.model.ScanReportV3;
+import com.hiddenlayer.sdk.rest.models.ModelInventoryInfo;
+import com.hiddenlayer.sdk.rest.models.ScanReportV3;
 
 public class ScanReporterTest {
     @Rule

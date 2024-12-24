@@ -6,7 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import hiddenlayer.ModelScanService;
+import com.hiddenlayer.sdk.ModelScanService;
 import hiddenlayer.sdk.ApiException;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
@@ -22,8 +22,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.openapitools.client.model.ModelInventoryInfo;
-import org.openapitools.client.model.ScanReportV3;
+import com.hiddenlayer.sdk.rest.models.ModelInventoryInfo;
+import com.hiddenlayer.sdk.rest.models.ScanReportV3;
 
 public class HLScanModelBuilderTest {
 

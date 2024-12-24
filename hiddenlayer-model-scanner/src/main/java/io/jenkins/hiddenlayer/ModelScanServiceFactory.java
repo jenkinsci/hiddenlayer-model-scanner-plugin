@@ -1,7 +1,7 @@
 package io.jenkins.hiddenlayer;
 
-import hiddenlayer.Config;
-import hiddenlayer.ModelScanService;
+import com.hiddenlayer.sdk.Configuration;
+import com.hiddenlayer.sdk.ModelScanService;
 import hudson.Extension;
 import hudson.util.Secret;
 
@@ -17,7 +17,7 @@ public class ModelScanServiceFactory {
         if (instance != null) {
             return instance;
         }
-        Config config = new Config(clientId, clientSecret.getPlainText());
+        Configuration config = new Configuration(clientId, clientSecret.getPlainText());
         return new ModelScanService(config);
     }
 }
