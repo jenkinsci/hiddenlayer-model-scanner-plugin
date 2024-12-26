@@ -39,8 +39,9 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
     // Folder containing the model to be scanned, relative to the workspace.
     private String folderToScan;
 
-    // Service used to call the HiddenLayer Model Scanner
-    private ModelScanService modelScanService;
+    // Service used to call the HiddenLayer Model Scanner.
+    // Mark it as transient so it won't be serialized with the object, to avoid security problems.
+    private transient ModelScanService modelScanService;
 
     @DataBoundConstructor
     public HLScanModelBuilder(String modelName, String hlClientId, String hlClientSecret, String folderToScan) {
