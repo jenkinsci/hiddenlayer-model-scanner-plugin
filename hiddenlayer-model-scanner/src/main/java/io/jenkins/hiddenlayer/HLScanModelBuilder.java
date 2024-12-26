@@ -69,8 +69,8 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
         this.hlClientId = hlClientId;
     }
 
-    public String getHlClientSecret() {
-        return Secret.toString(hlClientSecret);
+    public Secret getHlClientSecret() {
+        return hlClientSecret;
     }
 
     @DataBoundSetter
