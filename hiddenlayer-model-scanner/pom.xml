@@ -85,15 +85,15 @@
     <dependency>
       <groupId>com.hiddenlayer</groupId>
       <artifactId>hiddenlayer-sdk</artifactId>
-      <version>0.0.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jenkins-ci</groupId>
-      <artifactId>symbol-annotation</artifactId>
+      <version>0.1.2</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci</groupId>
       <artifactId>annotation-indexer</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci</groupId>
+      <artifactId>symbol-annotation</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -149,10 +149,6 @@
     <repository>
       <id>repo.jenkins-ci.org</id>
       <url>https://repo.jenkins-ci.org/public/</url>
-    </repository>
-    <repository>
-      <id>github</id>
-      <url>https://maven.pkg.github.com/hiddenlayerai/hiddenlayer-sdk-java</url>
     </repository>
   </repositories>
   <pluginRepositories>
