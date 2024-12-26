@@ -1,6 +1,7 @@
 package io.jenkins.hiddenlayer;
 
 import com.hiddenlayer.sdk.ModelScanService;
+import com.hiddenlayer.sdk.rest.models.ScanReportV3;
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -21,7 +22,6 @@ import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-import com.hiddenlayer.sdk.rest.models.ScanReportV3;
 
 /**
  * HLScanModelBuilder provides a build step that scans an ML model using the HiddenLayer Model Scanner.

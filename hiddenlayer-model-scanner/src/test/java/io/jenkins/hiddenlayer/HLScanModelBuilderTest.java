@@ -7,6 +7,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.hiddenlayer.sdk.ModelScanService;
+import com.hiddenlayer.sdk.rest.models.ModelInventoryInfo;
+import com.hiddenlayer.sdk.rest.models.ScanReportV3;
 import hiddenlayer.sdk.ApiException;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
@@ -22,8 +24,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
-import com.hiddenlayer.sdk.rest.models.ModelInventoryInfo;
-import com.hiddenlayer.sdk.rest.models.ScanReportV3;
 
 public class HLScanModelBuilderTest {
 
@@ -75,10 +75,18 @@ public class HLScanModelBuilderTest {
     @Test
     public void testConfigRoundtrip() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
-        HLScanModelBuilder builder = createBuilder();
+        HLScanModelBuilder builder = new HLScanModelBuilder(modelName, hlClientId, hlClientSecret, folderToScan);
         project.getBuildersList().add(builder);
+
+        // Save and reload the project configuration
         project = jenkins.configRoundtrip(project);
-        jenkins.assertEqualDataBoundBeans(builder, project.getBuildersList().get(0));
+
+        // Set mock service after roundtrip
+        HLScanModelBuilder gotBuilder =
+                (HLScanModelBuilder) project.getBuildersList().get(0);
+        gotBuilder.setModelScanService(mockModelScanService);
+
+        jenkins.assertEqualDataBoundBeans(builder, gotBuilder);
     }
 
     // Test that the builder can be created and run

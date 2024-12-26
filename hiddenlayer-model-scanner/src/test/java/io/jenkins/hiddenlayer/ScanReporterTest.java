@@ -2,12 +2,12 @@ package io.jenkins.hiddenlayer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.hiddenlayer.sdk.rest.models.ModelInventoryInfo;
+import com.hiddenlayer.sdk.rest.models.ScanReportV3;
 import java.time.OffsetDateTime;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
-import com.hiddenlayer.sdk.rest.models.ModelInventoryInfo;
-import com.hiddenlayer.sdk.rest.models.ScanReportV3;
 
 public class ScanReporterTest {
     @Rule
