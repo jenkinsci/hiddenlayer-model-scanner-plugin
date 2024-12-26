@@ -122,7 +122,7 @@ public class HLScanModelBuilderTest {
     }
 
     private HLScanModelBuilder createBuilder() {
-        HLScanModelBuilder builder = new HLScanModelBuilder(modelName, hlClientId, hlClientSecret, folderToScan);
+        HLScanModelBuilder builder = new HLScanModelBuilder(modelName, hlClientId, hlClientSecret, folderToScan, false, "");
         builder.setModelScanService(mockModelScanService);
         return builder;
     }
