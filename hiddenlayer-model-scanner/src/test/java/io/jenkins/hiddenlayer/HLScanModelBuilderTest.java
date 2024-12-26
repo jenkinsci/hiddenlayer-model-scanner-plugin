@@ -118,7 +118,7 @@ public class HLScanModelBuilderTest {
         jenkins.assertLogContains(scanMessage, completedBuild);
 
         // Add verification that mock was called with expected parameters
-        verify(mockModelScanService).scanFolder(eq(modelName), anyString());
+        verify(mockModelScanService).scanFolder(anyString(), eq(modelName));
     }
 
     private HLScanModelBuilder createBuilder() {
