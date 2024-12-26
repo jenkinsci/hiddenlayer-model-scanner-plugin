@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 import com.hiddenlayer.sdk.ModelScanService;
 import com.hiddenlayer.sdk.rest.models.ModelInventoryInfo;
 import com.hiddenlayer.sdk.rest.models.ScanReportV3;
-import hiddenlayer.sdk.ApiException;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Label;
@@ -46,7 +45,7 @@ public class HLScanModelBuilderTest {
     private String scanId = "scan-id";
 
     @Before
-    public void setUp() throws ApiException, IOException, URISyntaxException, InterruptedException, Exception {
+    public void setUp() throws IOException, URISyntaxException, InterruptedException, Exception {
         mockModelScanService = mock(ModelScanService.class);
 
         ModelInventoryInfo mii = new ModelInventoryInfo();
