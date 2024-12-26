@@ -89,11 +89,11 @@
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci</groupId>
-      <artifactId>symbol-annotation</artifactId>
+      <artifactId>annotation-indexer</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci</groupId>
-      <artifactId>annotation-indexer</artifactId>
+      <artifactId>symbol-annotation</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>

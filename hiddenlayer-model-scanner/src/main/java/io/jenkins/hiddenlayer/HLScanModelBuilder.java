@@ -130,8 +130,8 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
         }
     }
 
-    @Symbol("hlScanModel")
     @Extension
+    @Symbol("hlScanModel")
     /**
      * DescriptorImpl is a descriptor class for a Builder (a build step that runs during the build process).
      */
