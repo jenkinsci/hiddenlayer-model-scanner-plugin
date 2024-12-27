@@ -43,7 +43,7 @@
     <!-- TODO: restore spotbugs checking when we start using the real HiddenLayer Java SDK -->
     <spotbugs.skip>true</spotbugs.skip>
 
-    <jackson-version>2.15.2</jackson-version>
+    <jackson-version>2.18.2</jackson-version>
     <jackson-databind-nullable-version>0.2.6</jackson-databind-nullable-version>
   </properties>
 
@@ -64,7 +64,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>2.15.2</version>
+      <version>${jackson-version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -85,7 +85,7 @@
     <dependency>
       <groupId>com.hiddenlayer</groupId>
       <artifactId>hiddenlayer-sdk</artifactId>
-      <version>0.1.2</version>
+      <version>0.1.8</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci</groupId>
