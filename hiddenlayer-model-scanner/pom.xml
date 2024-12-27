@@ -41,7 +41,7 @@
     <spotless.check.skip>false</spotless.check.skip>
 
     <!-- TODO: restore spotbugs checking when we start using the real HiddenLayer Java SDK -->
-    <spotbugs.skip>true</spotbugs.skip>
+    <spotbugs.skip>false</spotbugs.skip>
 
     <jackson-version>2.18.2</jackson-version>
     <jackson-databind-nullable-version>0.2.6</jackson-databind-nullable-version>
