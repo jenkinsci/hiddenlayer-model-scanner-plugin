@@ -14,4 +14,16 @@
     <f:entry title="Folder to Scan" field="folderToScan">
         <f:textbox/>
     </f:entry>
+    <f:entry title="Fail Pipeline on Unsupported Model" field="failOnUnsupported">
+        <f:checkbox/>
+    </f:entry>
+    <f:entry title="Fail Pipeline if Scan Severity Equal to or Higher" field="failOnSeverity">
+        <select name="failOnSeverity">
+            <option selected="${(instance.failOnSeverity == null || instance.failOnSeverity.equals('')) ? 'true':null}" value="">Don't Fail Build</option>
+            <option selected="${instance.failOnSeverity.equals('LOW') ? 'true':null}" value="LOW">Low</option>
+            <option selected="${instance.failOnSeverity.equals('MEDIUM') ? 'true':null}" value="MEDIUM">Medium</option>
+            <option selected="${instance.failOnSeverity.equals('HIGH') ? 'true':null}" value="HIGH">High</option>
+            <option selected="${instance.failOnSeverity.equals('CRITICAL') ? 'true':null}" value="CRITICAL">Critical</option>
+        </select>
+    </f:entry>
 </j:jelly>

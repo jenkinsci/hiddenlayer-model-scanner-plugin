@@ -11,7 +11,8 @@
       "mavenVersion": "3.9.9",
       "installGradle": "false"
     },
-    "ghcr.io/devcontainers/features/github-cli:1": {}
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "git-lfs": "latest"
   },
   "customizations": {
     "vscode":{

@@ -15,7 +15,7 @@ public class ScanReporter {
         String scanEndTime = scanReport.getEndTime().format(formatter);
 
         StringBuilder sb = new StringBuilder(
-                String.format("Scan results for model \"%s\", version %s:\n", modelName, modelVersion));
+                String.format("Scan results for model \"%s\", version %s:%n", modelName, modelVersion));
         addLine(sb, "Status", scanReport.getStatus().toString());
         addLine(sb, "Severity", scanReport.getSeverity().toString());
         addLine(sb, "End time", scanEndTime);
@@ -25,7 +25,7 @@ public class ScanReporter {
     }
 
     private static void addLine(StringBuilder sb, String key, String value) {
-        sb.append(String.format("%s: %s\n", key, value));
+        sb.append(String.format("%s: %s%n", key, value));
     }
 
     private static String getScanResultsUrl(ScanReportV3 scanReport) {
