@@ -1,0 +1,2 @@
+_extends: .github
+tag-template: hiddenlayer-model-scanner-plugin-$NEXT_MINOR_VERSION
