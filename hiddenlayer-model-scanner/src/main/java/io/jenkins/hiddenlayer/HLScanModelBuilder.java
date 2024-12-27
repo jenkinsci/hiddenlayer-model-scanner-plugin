@@ -115,7 +115,8 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
             // Scan the model in folderToScan
             FilePath folderPath = new FilePath(workspace, folderToScan);
             String folder = folderPath.getRemote();
-            ScanReportV3 report = modelScanService.scanFolder(folder, modelName);
+            // The last arg to scanFolder is waitForDone
+            ScanReportV3 report = modelScanService.scanFolder(folder, modelName, true);
 
             // Summarize the scan results for the user
             String summary = ScanReporter.summarizeScan(report);

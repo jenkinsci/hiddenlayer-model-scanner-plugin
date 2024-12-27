@@ -62,7 +62,8 @@ public class HLScanModelBuilderTest {
         scanReport.setEndTime(offsetDateTime);
         scanReport.setVersion("24.10.2");
 
-        when(mockModelScanService.scanFolder(anyString(), anyString())).thenReturn(scanReport);
+        when(mockModelScanService.scanFolder(anyString(), anyString(), eq(true)))
+                .thenReturn(scanReport);
     }
 
     @After
@@ -118,7 +119,7 @@ public class HLScanModelBuilderTest {
         jenkins.assertLogContains(scanMessage, completedBuild);
 
         // Add verification that mock was called with expected parameters
-        verify(mockModelScanService).scanFolder(anyString(), eq(modelName));
+        verify(mockModelScanService).scanFolder(anyString(), eq(modelName), eq(true));
     }
 
     private HLScanModelBuilder createBuilder() {
