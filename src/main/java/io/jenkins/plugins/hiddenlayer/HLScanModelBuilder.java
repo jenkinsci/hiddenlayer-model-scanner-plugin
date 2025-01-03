@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import jenkins.security.Roles;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
 import org.jenkinsci.remoting.RoleChecker;
@@ -172,7 +173,7 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
 
                 @Override
                 public void checkRoles(RoleChecker checker) throws SecurityException {
-                    // no-op
+                    checker.check(this, Roles.SLAVE);
                 }
             });
 
