@@ -1,6 +1,6 @@
 # Coding Guidelines
 
-Welcome to the [Project Name] coding guidelines! These guidelines are designed to ensure consistency and maintainability in our codebase. Please follow these guidelines when contributing to the project.
+Welcome to the HiddenLayer Model Scanner Plugin coding guidelines! These guidelines are designed to ensure consistency and maintainability in our codebase. Please follow these guidelines when contributing to the project.
 
 ## General Principles
 
@@ -14,15 +14,9 @@ Welcome to the [Project Name] coding guidelines! These guidelines are designed t
 
 ## Language-Specific Guidelines
 
-### Python
+### Java
 
-1. **PEP 8 Compliance**: Follow the guidelines outlined in [PEP 8](https://www.python.org/dev/peps/pep-0008/) for Python code style and formatting.
-
-2. **Docstrings**: Use docstrings to document functions, classes, and modules. Follow the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings) for docstring conventions.
-
-3. **Imports**: Organize imports alphabetically and group them according to standard library imports, third-party library imports, and local imports.
-
-4. **Error Handling**: Handle errors gracefully using try-except blocks or other appropriate mechanisms. Avoid catching generic exceptions unless necessary.
+We are following the Jenkins Plugin Style Guide [here](https://www.jenkins.io/doc/developer/publishing/style-guides/)
 
 ## Version Control Guidelines
 

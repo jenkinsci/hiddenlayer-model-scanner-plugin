@@ -4,6 +4,8 @@ If you wish to report a security vulnerability, we ask that you follow the follo
 
 Visit our [Responsible Disclosure Policy](https://hiddenlayer.com/vulnerability-disclosure-policy/) and you can report a security vulnerability by filling out the form on that page.
 
+You may also submit a report by following the process about [Reporting Security Vulnerabilities](https://jenkins.io/security/reporting/).
+
 If you are unable to access the form, you can also report a security vulnerability by sending an email to <disclosure@hiddenlayer.com>.
 
 If you send us an email, please provide the following information:

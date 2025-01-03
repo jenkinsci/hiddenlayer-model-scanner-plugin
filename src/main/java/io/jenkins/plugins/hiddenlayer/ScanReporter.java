@@ -1,4 +1,4 @@
-package io.jenkins.hiddenlayer;
+package io.jenkins.plugins.hiddenlayer;
 
 import com.hiddenlayer.sdk.rest.models.ScanReportV3;
 import java.time.format.DateTimeFormatter;

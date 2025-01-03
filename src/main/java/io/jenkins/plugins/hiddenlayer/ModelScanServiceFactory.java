@@ -1,11 +1,9 @@
-package io.jenkins.hiddenlayer;
+package io.jenkins.plugins.hiddenlayer;
 
 import com.hiddenlayer.sdk.Configuration;
 import com.hiddenlayer.sdk.ModelScanService;
-import hudson.Extension;
 import hudson.util.Secret;
 
-@Extension
 public class ModelScanServiceFactory {
     private static ModelScanService instance;
 

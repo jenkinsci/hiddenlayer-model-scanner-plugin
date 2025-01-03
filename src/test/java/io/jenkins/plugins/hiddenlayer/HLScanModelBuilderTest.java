@@ -1,4 +1,4 @@
-package io.jenkins.hiddenlayer;
+package io.jenkins.plugins.hiddenlayer;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -35,7 +35,7 @@ public class HLScanModelBuilderTest {
     final String hlClientSecret = "client-secret";
     final String folderToScan = "folder-to-scan";
     final boolean failUnsupported = true;
-    final String failSeverity = "";
+    final FailOnDetectionSeverityEnum failSeverity = FailOnDetectionSeverityEnum.NONE;
 
     // This text is printed to the console when the plugin is run.
     final String scanMessage = String.format("Scanning model %s in folder %s", modelName, folderToScan);
@@ -117,7 +117,7 @@ public class HLScanModelBuilderTest {
                 + "', hlClientSecret: '" + hlClientSecret
                 + "', folderToScan: '" + folderToScan
                 + "', failOnUnsupported: " + failUnsupported
-                + ", failOnSeverity: '" + failSeverity
+                + ", failOnSeverity: 'NONE"
                 + "'}";
         job.setDefinition(new CpsFlowDefinition(pipelineScript, true));
         WorkflowRun completedBuild = jenkins.assertBuildStatusSuccess(job.scheduleBuild2(0));

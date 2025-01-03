@@ -1,10 +1,11 @@
 # Automates creation of Release Drafts using Release Drafter
 # More Info: https://github.com/jenkinsci/.github/blob/master/.github/release-drafter.adoc
 
-on:
-  push:
-    branches:
-      - main
+# We will add this back in when we are ready to release
+# on:
+#   push:
+#     branches:
+#       - main
 
 jobs:
   update_release_draft:
