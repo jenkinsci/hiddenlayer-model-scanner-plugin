@@ -25,5 +25,4 @@ jobs:
       uses: devcontainers/ci@v0.3
       with:
         runCmd: |
-          cd hiddenlayer-model-scanner
           mvn package
