@@ -85,7 +85,7 @@
     <dependency>
       <groupId>com.hiddenlayer</groupId>
       <artifactId>hiddenlayer-sdk</artifactId>
-      <version>0.1.10</version>
+      <version>0.1.13</version>
     </dependency>
 
     <dependency>

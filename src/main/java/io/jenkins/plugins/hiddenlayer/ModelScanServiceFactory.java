@@ -16,6 +16,6 @@ public class ModelScanServiceFactory {
             return instance;
         }
         Configuration config = new Configuration(clientId, clientSecret.getPlainText());
-        return new ModelScanService(config);
+        return new ModelScanService(config, new JenkinsApiClient());
     }
 }
