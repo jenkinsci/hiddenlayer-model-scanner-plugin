@@ -43,8 +43,6 @@
     <!-- TODO: restore spotbugs checking when we start using the real HiddenLayer Java SDK -->
     <spotbugs.skip>false</spotbugs.skip>
 
-    <jackson-version>2.17.0-379.v02de8ec9f64c</jackson-version>
-    <jackson-databind-nullable-version>0.2.6</jackson-databind-nullable-version>
   </properties>
 
   <dependencyManagement>
@@ -63,18 +61,30 @@
     <dependency>
       <groupId>com.hiddenlayer</groupId>
       <artifactId>hiddenlayer-sdk</artifactId>
-      <version>0.1.13</version>
+      <version>0.1.14</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-annotations</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.datatype</groupId>
+          <artifactId>jackson-datatype-jsr310</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <!-- JSON processing: jackson -->
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>jackson2-api</artifactId>
-      <version>${jackson-version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.openapitools</groupId>
-      <artifactId>jackson-databind-nullable</artifactId>
-      <version>0.2.6</version>
     </dependency>
 
     <dependency>
