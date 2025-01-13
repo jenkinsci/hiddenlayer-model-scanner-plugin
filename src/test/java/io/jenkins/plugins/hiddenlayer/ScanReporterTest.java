@@ -32,11 +32,13 @@ public class ScanReporterTest {
         String summary = ScanReporter.summarizeScan(scanReport);
 
         assertEquals(
-                "Scan results for model \"perceptron\", version 1.0.0:\n" + "Status: done\n"
-                        + "Severity: safe\n"
-                        + "End time: 2021-01-01T00:00:00Z\n"
-                        + "Scanner version: 24.10.2\n"
-                        + "Console scan link: https://console.us.hiddenlayer.ai/model-details/model-id/scans/scan-id\n",
+                "Scan results for model \"perceptron\", version 1.0.0:" + System.lineSeparator()
+                        + "Status: done" + System.lineSeparator()
+                        + "Severity: safe" + System.lineSeparator()
+                        + "End time: 2021-01-01T00:00:00Z" + System.lineSeparator()
+                        + "Scanner version: 24.10.2" + System.lineSeparator()
+                        + "Console scan link: https://console.us.hiddenlayer.ai/model-details/model-id/scans/scan-id"
+                        + System.lineSeparator(),
                 summary);
     }
 }
