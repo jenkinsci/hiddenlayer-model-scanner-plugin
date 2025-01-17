@@ -62,7 +62,7 @@
     <dependency>
       <groupId>com.hiddenlayer</groupId>
       <artifactId>hiddenlayer-sdk</artifactId>
-      <version>0.1.14</version>
+      <version>0.2.0</version>
       <exclusions>
         <exclusion>
           <groupId>com.fasterxml.jackson.core</groupId>
