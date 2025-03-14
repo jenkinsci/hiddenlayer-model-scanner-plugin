@@ -21,6 +21,7 @@ import hudson.util.Secret;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serial;
 import java.io.StringWriter;
 import jenkins.security.Roles;
 import jenkins.tasks.SimpleBuildStep;
@@ -155,7 +156,8 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
 
             // Scan the model in folderToScan
             FilePath folderPath = new FilePath(workspace, folderToScan);
-            ScanReportV3 report = folderPath.act(new FileCallable<ScanReportV3>() {
+            ScanReportV3 report = folderPath.act(new FileCallable<>() {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -237,16 +239,16 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
             StringWriter writer = new StringWriter();
             PrintWriter pw = new PrintWriter(writer);
             e.printStackTrace(pw);
-            listener.getLogger().println(writer.toString());
+            listener.getLogger().println(writer);
             throw new AbortException("Error scanning model: " + e.getMessage());
         }
     }
 
-    @Extension
-    @Symbol("hlScanModel")
     /**
      * DescriptorImpl is a descriptor class for a Builder (a build step that runs during the build process).
      */
+    @Extension
+    @Symbol("hlScanModel")
     public static class DescriptorImpl extends BuildStepDescriptor<Builder> {
 
         public DescriptorImpl() {
