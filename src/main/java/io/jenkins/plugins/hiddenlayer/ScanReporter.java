@@ -19,7 +19,7 @@ public class ScanReporter {
         addLine(sb, "Status", scanReport.getStatus().toString());
         addLine(sb, "Severity", scanReport.getSeverity().toString());
         addLine(sb, "End time", scanEndTime);
-        addLine(sb, "Scanner version", scanReport.getVersion().toString());
+        addLine(sb, "Scanner version", scanReport.getVersion());
         addLine(sb, "Console scan link", getScanResultsUrl(scanReport));
         return sb.toString();
     }

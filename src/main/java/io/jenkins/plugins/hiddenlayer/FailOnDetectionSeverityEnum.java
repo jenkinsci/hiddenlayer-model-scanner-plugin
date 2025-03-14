@@ -7,9 +7,9 @@ public enum FailOnDetectionSeverityEnum {
     HIGH("High"),
     CRITICAL("Critical");
 
-    private String value;
+    private final String value;
 
-    private FailOnDetectionSeverityEnum(String value) {
+    FailOnDetectionSeverityEnum(String value) {
         this.value = value;
     }
 
