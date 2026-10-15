@@ -49,8 +49,7 @@ public final class JenkinsProxySnapshot implements Serializable {
         if (proxyConfig == null) {
             return none();
         }
-        if (ModelScanServiceFactory.matchesNoProxyPattern(
-                proxyConfig.getNoProxyHostPatterns(), HIDDENLAYER_API_HOST)) {
+        if (ModelScanServiceFactory.matchesNoProxyPattern(proxyConfig.getNoProxyHostPatterns(), HIDDENLAYER_API_HOST)) {
             return none();
         }
         String proxyHost = proxyConfig.name;

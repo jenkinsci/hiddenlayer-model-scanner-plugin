@@ -96,9 +96,8 @@ public final class ScanResult implements Serializable {
 
     public static ScanResult from(ScanReport report) {
         ScanReport.Inventory inventory = report.inventory();
-        String endTime = report.endTime()
-                .map(dt -> dt.format(END_TIME_FORMATTER))
-                .orElse("unknown");
+        String endTime =
+                report.endTime().map(dt -> dt.format(END_TIME_FORMATTER)).orElse("unknown");
         ScanReport.Severity sdkSeverity = report.severity().orElse(null);
         String rawSeverity = sdkSeverity == null ? null : sdkSeverity.asString();
         return new ScanResult(

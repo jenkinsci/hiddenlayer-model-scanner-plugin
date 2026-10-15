@@ -45,8 +45,7 @@ class JenkinsProxySnapshotTest {
 
     @Test
     void fromProxyConfigurationSkipsHiddenLayerNoProxyHost() {
-        ProxyConfiguration config =
-                new ProxyConfiguration("proxy.example.com", 8080, null, null, "api.hiddenlayer.ai");
+        ProxyConfiguration config = new ProxyConfiguration("proxy.example.com", 8080, null, null, "api.hiddenlayer.ai");
         assertFalse(JenkinsProxySnapshot.from(config).isConfigured());
     }
 
