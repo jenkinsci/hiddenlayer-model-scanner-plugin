@@ -136,15 +136,15 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
 
         try {
             FilePath folderPath = new FilePath(workspace, folderToScan);
-            ScanResult report = folderPath.act(new ScanFolderCallable(
-                    modelName, hlClientId, hlClientSecret, JenkinsProxySnapshot.fromJenkins()));
+            ScanResult report = folderPath.act(
+                    new ScanFolderCallable(modelName, hlClientId, hlClientSecret, JenkinsProxySnapshot.fromJenkins()));
 
             // Summarize the scan results for the user
             String summary = ScanReporter.summarizeScan(report);
             listener.getLogger().print(summary);
             Optional<String> unrecognizedSeverity = report.getUnrecognizedSeverity();
-            unrecognizedSeverity.ifPresent(raw -> listener.getLogger()
-                    .printf("Unrecognized scan severity from HiddenLayer: %s%n", raw));
+            unrecognizedSeverity.ifPresent(
+                    raw -> listener.getLogger().printf("Unrecognized scan severity from HiddenLayer: %s%n", raw));
             ScanResult.Severity reportSeverity = report.getSeverity().orElse(null);
             if (failOnUnsupported
                     && unrecognizedSeverity.isEmpty()
@@ -231,8 +231,7 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
             this(modelName, clientId, clientSecret, JenkinsProxySnapshot.none(), null);
         }
 
-        ScanFolderCallable(
-                String modelName, String clientId, Secret clientSecret, JenkinsProxySnapshot proxySnapshot) {
+        ScanFolderCallable(String modelName, String clientId, Secret clientSecret, JenkinsProxySnapshot proxySnapshot) {
             this(modelName, clientId, clientSecret, proxySnapshot, null);
         }
 
