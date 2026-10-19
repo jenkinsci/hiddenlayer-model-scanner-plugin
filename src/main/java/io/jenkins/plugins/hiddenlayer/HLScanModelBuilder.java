@@ -1,12 +1,10 @@
 package io.jenkins.plugins.hiddenlayer;
 
 import com.hiddenlayer.api.models.scans.results.ScanReport;
-import com.hiddenlayer.api.models.scans.results.ScanReport.Severity;
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
-import hudson.FilePath.FileCallable;
 import hudson.Launcher;
 import hudson.model.AbstractProject;
 import hudson.model.Item;
@@ -21,11 +19,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serial;
+import java.io.Serializable;
 import java.io.StringWriter;
-import jenkins.security.Roles;
+import java.util.Optional;
+import jenkins.MasterToSlaveFileCallable;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
-import org.jenkinsci.remoting.RoleChecker;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -53,10 +52,6 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
 
     // Fail the build if the model has a severity level greater than or equal to the specified level
     private FailOnDetectionSeverityEnum failOnSeverity;
-
-    // Scanner used to call the HiddenLayer Model Scanner.
-    // Mark it as transient so it won't be serialized with the object, to avoid security problems.
-    private transient ScannerService modelScanner;
 
     @DataBoundConstructor
     public HLScanModelBuilder(
@@ -128,14 +123,6 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
         this.failOnSeverity = failOnSeverity;
     }
 
-    public ScannerService getModelScanner() {
-        return modelScanner;
-    }
-
-    public void setModelScanner(ScannerService modelScanner) {
-        this.modelScanner = modelScanner;
-    }
-
     /**
      * Execute the build step:
      * - Scan the ML model in the specified folder by calling the HiddenLayer Model Scanner
@@ -148,46 +135,27 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
         listener.getLogger().printf("Scanning model %s in folder %s ...%n", modelName, folderToScan);
 
         try {
-            // Initialize the ModelScanner if needed (tests may inject a mock scanner)
-            if (modelScanner == null) {
-                modelScanner = ModelScanServiceFactory.getInstance(hlClientId, hlClientSecret);
-            }
-
-            // Scan the model in folderToScan
             FilePath folderPath = new FilePath(workspace, folderToScan);
-            ScanReport report = folderPath.act(new FileCallable<>() {
-                @Serial
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public ScanReport invoke(File f, VirtualChannel channel) {
-                    String folder = f.getAbsolutePath();
-                    try {
-                        ScanReport report = modelScanner.scanFolder(modelName, folder);
-                        return report;
-                    } catch (Exception e) {
-                        listener.getLogger().println("Error scanning model: " + e.getMessage());
-                        throw new RuntimeException(e);
-                    }
-                }
-
-                @Override
-                public void checkRoles(RoleChecker checker) throws SecurityException {
-                    checker.check(this, Roles.SLAVE);
-                }
-            });
+            ScanResult report = folderPath.act(
+                    new ScanFolderCallable(modelName, hlClientId, hlClientSecret, JenkinsProxySnapshot.fromJenkins()));
 
             // Summarize the scan results for the user
             String summary = ScanReporter.summarizeScan(report);
             listener.getLogger().print(summary);
-            Severity reportSeverity = report.severity().orElse(null);
-            if (failOnUnsupported && (reportSeverity == null || Severity.UNKNOWN.equals(reportSeverity))) {
+            Optional<String> unrecognizedSeverity = report.getUnrecognizedSeverity();
+            unrecognizedSeverity.ifPresent(
+                    raw -> listener.getLogger().printf("Unrecognized scan severity from HiddenLayer: %s%n", raw));
+            ScanResult.Severity reportSeverity = report.getSeverity().orElse(null);
+            if (failOnUnsupported
+                    && unrecognizedSeverity.isEmpty()
+                    && (reportSeverity == null || ScanResult.Severity.UNKNOWN.equals(reportSeverity))) {
                 throw new AbortException("Model type is not supported by HiddenLayer");
             }
             if (failOnSeverity != FailOnDetectionSeverityEnum.NONE && reportSeverity != null) {
                 // just kick out if SAFE or UNKNOWN
-                if (!Severity.UNKNOWN.equals(reportSeverity) && !Severity.SAFE.equals(reportSeverity)) {
-                    if (Severity.LOW.equals(reportSeverity)) {
+                if (!ScanResult.Severity.UNKNOWN.equals(reportSeverity)
+                        && !ScanResult.Severity.SAFE.equals(reportSeverity)) {
+                    if (ScanResult.Severity.LOW.equals(reportSeverity)) {
                         if (failOnSeverity == FailOnDetectionSeverityEnum.LOW) {
                             listener.getLogger()
                                     .printf(
@@ -195,7 +163,7 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
                                             reportSeverity, failOnSeverity);
                             throw new AbortException("Model has " + reportSeverity + " severity detection!");
                         }
-                    } else if (Severity.MEDIUM.equals(reportSeverity)) {
+                    } else if (ScanResult.Severity.MEDIUM.equals(reportSeverity)) {
                         if (failOnSeverity == FailOnDetectionSeverityEnum.MEDIUM
                                 || failOnSeverity == FailOnDetectionSeverityEnum.LOW) {
                             listener.getLogger()
@@ -204,7 +172,7 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
                                             reportSeverity, failOnSeverity);
                             throw new AbortException("Model has " + reportSeverity + " severity detection!");
                         }
-                    } else if (Severity.HIGH.equals(reportSeverity)) {
+                    } else if (ScanResult.Severity.HIGH.equals(reportSeverity)) {
                         if (failOnSeverity == FailOnDetectionSeverityEnum.HIGH
                                 || failOnSeverity == FailOnDetectionSeverityEnum.MEDIUM
                                 || failOnSeverity == FailOnDetectionSeverityEnum.LOW) {
@@ -214,7 +182,7 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
                                             reportSeverity, failOnSeverity);
                             throw new AbortException("Model has " + reportSeverity + " severity detection!");
                         }
-                    } else if (Severity.CRITICAL.equals(reportSeverity)) {
+                    } else if (ScanResult.Severity.CRITICAL.equals(reportSeverity)) {
                         listener.getLogger()
                                 .printf(
                                         "Failing build due to model scan having a %s severity detection (threshold: %s)%n",
@@ -227,6 +195,8 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
             }
         } catch (AbortException e) {
             throw e;
+        } catch (InterruptedException e) {
+            throw e;
         } catch (Exception e) {
             listener.getLogger().println("Error scanning model: " + e.getMessage());
             StringWriter writer = new StringWriter();
@@ -234,6 +204,61 @@ public class HLScanModelBuilder extends Builder implements SimpleBuildStep {
             e.printStackTrace(pw);
             listener.getLogger().println(writer);
             throw new AbortException("Error scanning model: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Remoting-safe scanner used by tests. Production always constructs the client via
+     * {@link ModelScanServiceFactory} on the node that owns the workspace.
+     */
+    interface SerializableScannerService extends ScannerService, Serializable {}
+
+    /**
+     * Runs the scan on the node that owns the workspace. Must be a static class so Jenkins remoting
+     * can serialize it to remote agents without capturing {@link HLScanModelBuilder} or {@link TaskListener}.
+     */
+    static final class ScanFolderCallable extends MasterToSlaveFileCallable<ScanResult> {
+        @Serial
+        private static final long serialVersionUID = 1L;
+
+        private final String modelName;
+        private final String clientId;
+        private final Secret clientSecret;
+        private final JenkinsProxySnapshot proxySnapshot;
+        private final SerializableScannerService scannerOverride;
+
+        ScanFolderCallable(String modelName, String clientId, Secret clientSecret) {
+            this(modelName, clientId, clientSecret, JenkinsProxySnapshot.none(), null);
+        }
+
+        ScanFolderCallable(String modelName, String clientId, Secret clientSecret, JenkinsProxySnapshot proxySnapshot) {
+            this(modelName, clientId, clientSecret, proxySnapshot, null);
+        }
+
+        ScanFolderCallable(
+                String modelName,
+                String clientId,
+                Secret clientSecret,
+                JenkinsProxySnapshot proxySnapshot,
+                SerializableScannerService scannerOverride) {
+            this.modelName = modelName;
+            this.clientId = clientId;
+            this.clientSecret = clientSecret;
+            this.proxySnapshot = proxySnapshot != null ? proxySnapshot : JenkinsProxySnapshot.none();
+            this.scannerOverride = scannerOverride;
+        }
+
+        @Override
+        public ScanResult invoke(File f, VirtualChannel channel) throws IOException {
+            try {
+                ScannerService scanner = scannerOverride != null
+                        ? scannerOverride
+                        : ModelScanServiceFactory.getInstance(clientId, clientSecret, proxySnapshot);
+                ScanReport report = scanner.scanFolder(modelName, f.getAbsolutePath());
+                return ScanResult.from(report);
+            } catch (RuntimeException e) {
+                throw new IOException(e.getMessage(), e);
+            }
         }
     }
 

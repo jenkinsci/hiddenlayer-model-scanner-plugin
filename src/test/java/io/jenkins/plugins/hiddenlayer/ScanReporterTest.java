@@ -50,7 +50,7 @@ public class ScanReporterTest {
                 .severity(ScanReport.Severity.SAFE)
                 .build();
 
-        String reportSummary = ScanReporter.summarizeScan(scanReport);
+        String reportSummary = ScanReporter.summarizeScan(ScanResult.from(scanReport));
 
         assertEquals(
                 "Scan results for model \"perceptron\", version 1.0.0:" + System.lineSeparator()

@@ -3,12 +3,8 @@ package io.jenkins.plugins.hiddenlayer;
 import com.hiddenlayer.api.client.HiddenLayerClient;
 import com.hiddenlayer.api.client.HiddenLayerClientImpl;
 import com.hiddenlayer.api.core.ClientOptions;
-import hudson.ProxyConfiguration;
 import hudson.util.Secret;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.util.regex.Pattern;
-import jenkins.model.Jenkins;
 import okhttp3.Authenticator;
 import okhttp3.Credentials;
 import okhttp3.Request;
@@ -17,8 +13,6 @@ import okhttp3.Route;
 
 public class ModelScanServiceFactory {
 
-    private static final String HIDDENLAYER_API_HOST = "api.hiddenlayer.ai";
-
     private static ScannerService instance;
 
     public static void setTestInstance(ScannerService scanner) {
@@ -26,16 +20,19 @@ public class ModelScanServiceFactory {
     }
 
     public static ScannerService getInstance(String clientId, Secret clientSecret) {
+        return getInstance(clientId, clientSecret, JenkinsProxySnapshot.fromJenkins());
+    }
+
+    public static ScannerService getInstance(String clientId, Secret clientSecret, JenkinsProxySnapshot proxySnapshot) {
         if (instance != null) {
             return instance;
         }
 
         JenkinsHttpClient.Builder httpClientBuilder = JenkinsHttpClient.builder();
-
-        Proxy proxy = getJenkinsProxy();
-        if (proxy != null) {
-            httpClientBuilder.proxy(proxy);
-            Authenticator proxyAuth = getProxyAuthenticator();
+        JenkinsProxySnapshot proxy = proxySnapshot != null ? proxySnapshot : JenkinsProxySnapshot.none();
+        if (proxy.isConfigured()) {
+            httpClientBuilder.proxy(proxy.toProxy());
+            Authenticator proxyAuth = proxy.toAuthenticator();
             if (proxyAuth != null) {
                 httpClientBuilder.proxyAuthenticator(proxyAuth);
             }
@@ -51,35 +48,6 @@ public class ModelScanServiceFactory {
         return new ModelScannerWrapper(client.modelScanner());
     }
 
-    private static Proxy getJenkinsProxy() {
-        Jenkins jenkins = Jenkins.getInstanceOrNull();
-        if (jenkins == null) {
-            return null;
-        }
-
-        ProxyConfiguration proxyConfig = jenkins.proxy;
-        if (proxyConfig == null) {
-            return null;
-        }
-
-        if (isNoProxyHost(proxyConfig, HIDDENLAYER_API_HOST)) {
-            return null;
-        }
-
-        String proxyHost = proxyConfig.name;
-        int proxyPort = proxyConfig.port;
-
-        if (proxyHost == null || proxyHost.isEmpty()) {
-            return null;
-        }
-
-        return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
-    }
-
-    private static boolean isNoProxyHost(ProxyConfiguration proxyConfig, String host) {
-        return matchesNoProxyPattern(proxyConfig.getNoProxyHostPatterns(), host);
-    }
-
     static boolean matchesNoProxyPattern(Iterable<Pattern> patterns, String host) {
         for (Pattern pattern : patterns) {
             if (pattern.matcher(host).matches()) {
@@ -87,24 +55,6 @@ public class ModelScanServiceFactory {
             }
         }
         return false;
-    }
-
-    private static Authenticator getProxyAuthenticator() {
-        Jenkins jenkins = Jenkins.getInstanceOrNull();
-        if (jenkins == null || jenkins.proxy == null) {
-            return null;
-        }
-
-        ProxyConfiguration proxyConfig = jenkins.proxy;
-        String username = proxyConfig.getUserName();
-        Secret password = proxyConfig.getSecretPassword();
-
-        if (username == null || username.isEmpty()) {
-            return null;
-        }
-
-        String passwordStr = password != null ? password.getPlainText() : "";
-        return createProxyAuthenticator(username, passwordStr);
     }
 
     static Authenticator createProxyAuthenticator(String username, String password) {
