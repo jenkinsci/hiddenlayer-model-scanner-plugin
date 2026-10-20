@@ -5,16 +5,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.hiddenlayer.api.models.scans.results.ScanReport;
 import java.time.OffsetDateTime;
 import java.util.Collections;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class ScanReporterTest {
-    @Rule
-    public JenkinsRule jenkins = new JenkinsRule();
+@WithJenkins
+class ScanReporterTest {
+
+    private JenkinsRule jenkins;
+
+    @BeforeEach
+    void setUp(JenkinsRule rule) {
+        jenkins = rule;
+    }
 
     @Test
-    public void testSummarizeScan() {
+    void testSummarizeScan() {
         OffsetDateTime offsetDateTime = OffsetDateTime.parse("2021-01-01T00:00:00Z");
 
         ScanReport.Inventory inventory = ScanReport.Inventory.builder()

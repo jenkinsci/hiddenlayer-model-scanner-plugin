@@ -1,6 +1,6 @@
 package io.jenkins.plugins.hiddenlayer;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -14,24 +14,22 @@ import hudson.model.FreeStyleProject;
 import hudson.model.Label;
 import hudson.model.Slave;
 import hudson.util.Secret;
-import java.io.IOException;
 import java.io.Serial;
-import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class HLScanModelBuilderTest {
+@WithJenkins
+class HLScanModelBuilderTest {
 
-    @Rule
-    public JenkinsRule jenkins = new JenkinsRule();
+    private JenkinsRule jenkins;
 
     // Builder parameters
     final String modelName = "model-name";
@@ -50,8 +48,9 @@ public class HLScanModelBuilderTest {
     private String modelId = "model-id";
     private String scanId = "scan-id";
 
-    @Before
-    public void setUp() throws IOException, URISyntaxException, InterruptedException, Exception {
+    @BeforeEach
+    void setUp(JenkinsRule rule) {
+        jenkins = rule;
         mockScannerService = mock(ScannerService.class);
 
         ScanReport scanReport = createScanReport(modelName, modelId, modelVersion, scanId);
@@ -60,14 +59,14 @@ public class HLScanModelBuilderTest {
         ModelScanServiceFactory.setTestInstance(mockScannerService);
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         ModelScanServiceFactory.setTestInstance(null);
     }
 
     // Test that the builder can be created and configured
     @Test
-    public void testConfigRoundtrip() throws Exception {
+    void testConfigRoundtrip() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
         HLScanModelBuilder builder = new HLScanModelBuilder(
                 modelName, hlClientId, hlClientSecret, folderToScan, failUnsupported, failSeverity);
@@ -84,7 +83,7 @@ public class HLScanModelBuilderTest {
 
     // Test that the builder can be created and run
     @Test
-    public void testBuild() throws Exception {
+    void testBuild() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
         HLScanModelBuilder builder = createBuilder();
         project.getBuildersList().add(builder);
@@ -95,7 +94,7 @@ public class HLScanModelBuilderTest {
 
     // Test that the builder can be created and run in a scripted pipeline
     @Test
-    public void testScriptedPipeline() throws Exception {
+    void testScriptedPipeline() throws Exception {
         String controllerLabel = jenkins.jenkins.getSelfLabel().getName();
         WorkflowJob job = jenkins.createProject(WorkflowJob.class, "test-scripted-pipeline");
         String pipelineScript = "node('" + controllerLabel + "') {hlScanModel modelName: '" + modelName
@@ -114,7 +113,7 @@ public class HLScanModelBuilderTest {
     }
 
     @Test
-    public void testCallableRunsOnRemoteAgent() throws Exception {
+    void testCallableRunsOnRemoteAgent() throws Exception {
         Slave agent = jenkins.createOnlineSlave(Label.get("remote-scan"));
         FilePath folder = agent.getRootPath().child(folderToScan);
         folder.mkdirs();
